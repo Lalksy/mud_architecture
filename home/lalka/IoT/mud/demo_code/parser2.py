@@ -11,33 +11,46 @@ with open('lighting-example.json') as data_file:
 acl = d["ietf-access-control-list:access-lists"]["acl"]
 #print(acl)
  
-direction = []
-ace = []
-act = []
-match = []
-for i in range(1):
-direction[i]  = acl[i]["acl-name"]
-#print(direction)
+for i in range(len(acl)): # this loop with go through both the inbound and outbound
+ direction = acl[i]["acl-name"]
+ print(direction)
+ ace = acl[i]["access-list-entries"]["ace"]
 
-ace[0] = acl[0]["access-list-entries"]["ace"][0]
-#print(iace)
+ for j in range(len(ace)):
+  entry = ace[j]
+  print (entry["rule-name"])
+  #print(ace)
 
-#input action
-act = iace["actions"]["permit"] 
+  #input action
+  action = entry["actions"].keys()[0]
+  if action == 'permit':
+   action = 'ACCEPT'
+  print(action)
 
-#inbound rules#################################################################
-imatch  = iace["matches"]
-#print(imatch)
+  #rules
+  #inbound port
+  try:
+   port = entry["matches"]["source-port-range"]["lower-port"]
+  except:
+   port = entry["matches"]["destination-port-range"]["lower-port"]
+  print(port)
 
-#inbound port
-iport = imatch["destination-port-range"]["lower-port"]
-#print(iport)
+  #Source IP
+  try:
+   ip = entry["matches"]["ietf-acl-dnsname:source-hostname"]
+  except:
+   ip = entry["matches"]["ietf-acl-dnsname:destination-hostname"]
+  print(ip)
+  numIp = socket.gethostbyname(ip)
+  
 
-#Source IP
-sip = imatch["ietf-acl-dnsname:source-hostname"]
-#print(sip)
+  #protocol
+  protocol = entry["matches"]["protocol"]
+  print(protocol)
+  
+  ##########################################################################
+  I =  "sudo iptables -A INPUT -p "+protocol+" --dport "+str(port)+" -s "+numIp+" -j "+action
+  O = "sudo iptables -A OUTPUT -p "+protocol+" --dport "+str(port)+" -d "+numIp+" -j "+action
 
-#protocol
-iproto = imatch["protocol"]
-#print(iproto)
-################################################################################
+f2 = "sudo iptables --policy FORWARD DROP"
+I2 = "sudo iptables --policy INPUT DROP"

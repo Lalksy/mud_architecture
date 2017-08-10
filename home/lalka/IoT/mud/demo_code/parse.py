@@ -33,6 +33,7 @@ TranslatedIp = socket.gethostbyname(host)
 
 # By default DROP FORWARD PACKETS
 f2 = "sudo iptables --policy FORWARD DROP"
+print(f2)
 
 # OUTGOING PACKETS FOR ALLOWED DESTINATION
 
@@ -42,13 +43,15 @@ print(O1)
 # By default DROP OUTPUT PACKETS 
 O2 = "sudo iptables --policy OUTPUT DROP"
 # ACCEPT ONLY TCP PACKETS AT PORT 102 FROM ALLOWED IP ADDRESS
+print(O2)
 
 I1 = "sudo iptables -A INPUT -p "+protocol+" --dport "+str(lport)+" -s "+TranslatedIp+" -j "+inaction
 print(I1)
 
 # By default DROP ALL OTHER INPUT PACKETS
 I2 = "sudo iptables --policy INPUT DROP"
- 
+print(I1)
+
 #os.system(I1)
 #os.system(O1)
 #os.system(f2)
