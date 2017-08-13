@@ -30,6 +30,7 @@ import sys
 import os
 import json
 import glob
+import socket
 
 dir_input = "/usr/local/etc/controller/"
 mud_file_store = dir_input+'mud.json'
@@ -116,55 +117,54 @@ def get_json_value(json_object, index):
     else:
         data = json.loads(data)
 
-    in_acl = (data['ietf-acl:access-lists']['ietf-acl:access-list'][0]['access-list-entries']['ace'])
-    #in_acl = (data['ietf-acl:access-list']['access-list-entries']['ace']) #me
-    len_in_acl = len(data['ietf-acl:access-lists']['ietf-acl:access-list'][0]['access-list-entries']['ace'])
-    out_acl = (data['ietf-acl:access-lists']['ietf-acl:access-list'][1]['access-list-entries']['ace'])
-    len_out_acl = len(data['ietf-acl:access-lists']['ietf-acl:access-list'][1]['access-list-entries']['ace'])
-    last_update = data['ietf-mud:meta-info']['lastUpdate']
-    cache_validity = data['ietf-mud:meta-info']['cacheValidity']
+    in_acl = (data['ietf-access-control-list:access-lists']['acl'][0]['access-list-entries']['ace'])
+    len_in_acl = len(data['ietf-access-control-list:access-lists']['acl'][0]['access-list-entries']['ace'])
+    out_acl = (data['ietf-access-control-list:access-lists']['acl'][1]['access-list-entries']['ace'])
+    len_out_acl = len(data['ietf-access-control-list:access-lists']['acl'][1]['access-list-entries']['ace'])
+    last_update = data['ietf-mud:support-information']['last-update']
+    cache_validity = data['ietf-mud:support-information']['cache-validity']
     new_list = []
     for row in in_acl:
         try:
             if json_object == "acl_name_in":
-                mylist = ((data['ietf-acl:access-lists']['ietf-acl:access-list'][0]['acl-name']))
+                mylist = ((data['ietf-access-control-list:access-lists']['acl'][0]['acl-name']))
                 new_list += [mylist]
 	    if json_object == "acl_type_in":
-                mylist = ((data['ietf-acl:access-lists']['ietf-acl:access-list'][0]['ietf-mud:packet-direction']))
+                mylist = ((data['ietf-access-control-list:access-lists']['acl'][0]['ietf-mud:direction']))
                 new_list += [mylist]
 	    if json_object == "rule_name_in":
                 mylist = ((row['rule-name']))
                 new_list += [mylist]
             if json_object == "src_dnsname_in":
-                mylist = ((row['matches']['ietf-acldns:src-dnsname']))
+                mylist = ((row['matches']['ietf-acl-dnsname:source-hostname']))
                 new_list += [mylist]
             if json_object == "src_protocol_in":
                 mylist = ((row['matches']['protocol']))
                 new_list += [mylist]
-            if json_object == "src_lower_port_in":
-                mylist = ((row['matches']['source-port-range']['lower-port']))
+            if json_object == "dst_lower_port_in": #!!!!
+                mylist = ((row['matches']['destination-port-range']['lower-port']))
                 new_list += [mylist]
-            if json_object == "src_upper_port_in":
-                mylist = ((row['matches']['source-port-range']['upper-port']))
+            if json_object == "dst_upper_port_in":
+                mylist = ((row['matches']['destination-port-range']['upper-port']))
                 new_list += [mylist]
             if json_object == "src_actions_in":
                 mylist = ((row['actions']['permit'][0]))
                 new_list += [mylist]
-        except KeyError: 
+        except KeyError:
             pass
     for row in out_acl:
         try:
 	    if json_object == "acl_name_out":
-                mylist = ((data['ietf-acl:access-lists']['ietf-acl:access-list'][1]['acl-name']))
+                mylist = ((data['ietf-access-control-list:access-lists']['acl'][1]['acl-name']))
                 new_list += [mylist]
             if json_object == "acl_type_out":
-                mylist = ((data['ietf-acl:access-lists']['ietf-acl:access-list'][1]['ietf-mud:packet-direction']))
+                mylist = ((data['ietf-access-control-list:access-lists']['acl'][1]['ietf-mud:direction']))
                 new_list += [mylist]
             if json_object == "rule_name_out":
                 mylist = ((row['rule-name']))
                 new_list += [mylist]
             if json_object == "src_dnsname_out":
-                mylist = ((row['matches']['ietf-acldns:src-dnsname']))
+                mylist = ((row['matches']['ietf-acl-dnsname:destination-hostname']))
                 new_list += [mylist]
             if json_object == "src_protocol_out":
                 mylist = ((row['matches']['protocol']))
@@ -180,9 +180,10 @@ def get_json_value(json_object, index):
                 new_list += [mylist]
         except KeyError: 
             pass
-    
+        
     if index < len_in_acl:
         try:
+            print(new_list[index])
             return new_list[index]
         except ValueError:
             print ""
@@ -194,8 +195,8 @@ def read_json():
 	rule_name_in = get_json_value("rule_name_in",0)
 	src_dnsname_in = get_json_value("src_dnsname_in",0)
 	src_protocol_in = get_json_value("src_protocol_in",0)
-	src_lower_port_in = get_json_value("src_lower_port_in",0)
-	src_upper_port_in = get_json_value("src_upper_port_in",0)
+	dst_lower_port_in = get_json_value("dst_lower_port_in",0)
+	dst_upper_port_in = get_json_value("dst_upper_port_in",0)
 	src_actions_in = get_json_value("src_actions_in",0)
 	# Out_ACL
         acl_name_out = get_json_value("acl_name_out",0)
@@ -250,11 +251,11 @@ def read_json():
 		print src_dnsname_in #destination
 		if (src_lower_port_in == ""):
 				print "eq" #port match any
-				print src_upper_port_in
+				print dst_upper_port_in
 		else:
 				print "range" #port match any
-				print src_lower_port_in
-				print src_upper_port_in
+				print dst_lower_port_in
+				print dst_upper_port_in
 	def egress_acl_permit():
 			print "permit ip any any"
 	def egress_acl_deny():
@@ -262,7 +263,7 @@ def read_json():
 	def egress_acl_null():
 			print ''## 
 	if (str(sys.argv[2]) == "R1"):
-		if (src_upper_port_in == '0'):
+		if (dst_upper_port_in == '0'):
 				egress_acl_permit()#"permit ip any any"
 		else:
 				ingress_acl_1()
@@ -289,4 +290,4 @@ if __name__ == '__main__':
 	else :
 		a = "null"
 	radius()# call json and signature verify program 
-#	read_json() # send the request
+        read_json() # send the request
