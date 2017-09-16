@@ -129,7 +129,7 @@ def get_json_value(json_object, index):
             if json_object == "acl_name_in":
                 mylist = ((data['ietf-access-control-list:access-lists']['acl'][0]['acl-name']))
                 new_list += [mylist]
-	    if json_object == "acl_type_in":
+            if json_object == "acl_type_in":
                 mylist = ((data['ietf-access-control-list:access-lists']['acl'][0]['ietf-mud:direction']))
                 new_list += [mylist]
 	    if json_object == "rule_name_in":
