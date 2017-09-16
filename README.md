@@ -3,7 +3,8 @@ An implementation of the architecture described in the IETF draft "Manufacturer 
 Following directions from https://github.com/elear/mud  
 Using FreeRadius server on Ubuntu Linux 16.04 LTS  
 
-Detailed instructions on how to deploy the architecture can be found at https://github.com/Lalksy/mud_architecture/blob/master/home/lalka/IoT/mud/updated%20mud%20instructions.pdf
+Detailed instructions on how to deploy the architecture can be found at 
+https://github.com/Lalksy/mud_architecture/blob/master/home/lalka/IoT/mud/mud_instructions_draft.pdf
 
 # Caution
 This is a sparse repo located in the root directory. Cloning this repository to your root directory 
