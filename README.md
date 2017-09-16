@@ -5,7 +5,10 @@ Using FreeRadius server on Ubuntu Linux 16.04 LTS. Some demo scripts use Mininet
 https://github.com/intrig-unicamp/mininet-wifi
 
 A draft of instructions on how to deploy and demo architecture components can be found at 
-https://github.com/Lalksy/mud_architecture/blob/master/home/lalka/IoT/mud/mud_instructions_draft.pdf
+https://github.com/Lalksy/mud_architecture/blob/master/home/lalka/IoT/mud/mud_instructions_draft.pdf  
+
+Note: Not all the files needed to build a working demo are provided in this repo. Please follow the
+instructions if you would like to build it, and refer to this repo as an example.  
 
 # Caution
 This is a sparse repo located in the root directory. It is being used to track some system configuration files,
